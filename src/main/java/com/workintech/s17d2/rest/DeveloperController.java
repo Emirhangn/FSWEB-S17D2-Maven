@@ -1,13 +1,11 @@
 package com.workintech.s17d2.rest;
 
-import com.workintech.s17d2.model.Developer;
-import com.workintech.s17d2.model.JuniorDeveloper;
-import com.workintech.s17d2.model.MidDeveloper;
-import com.workintech.s17d2.model.SeniorDeveloper;
+import com.workintech.s17d2.model.*;
 import com.workintech.s17d2.tax.DeveloperTax;
 import com.workintech.s17d2.tax.Taxable;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -27,18 +25,20 @@ public class DeveloperController {
  @PostConstruct
  public void init(){
   developers = new HashMap<>();
+  developers.put(1, new Developer(1 , "Ayşe",5000.0,Experience.SENIOR ));
+  developers.put(2, new Developer(2 ,"Ali",6000.0, Experience.JUNIOR ));
  }
 
  @GetMapping
- public List<Developer> getDevelopers(){
+ public List<Developer> getAllDevelopers(){
   return developers.values().stream().toList();
  }
 
- @GetMapping("/id")
- public Developer getDeveloper(@PathVariable int id){
+ @GetMapping("/{id}")
+ public Developer getDeveloperById(@PathVariable int id){
   return developers.get(id);
  }
- @PutMapping("/id")
+ @PutMapping("/{id}")
  public void updateDeveloper (@PathVariable Integer id, @RequestBody Developer developer) {
   if (developers.containsKey(id)) {
    developers.put(developer.getId(), developer);
@@ -48,6 +48,7 @@ public class DeveloperController {
  }
 
  @PostMapping
+ @ResponseStatus(HttpStatus.CREATED)
  public Developer insertDeveloper(@RequestBody Developer developer){
 
   double taxRate = 0;
@@ -76,7 +77,7 @@ public class DeveloperController {
   return newDeveloper;
 }
 
- @DeleteMapping("/id")
+ @DeleteMapping("/{id}")
  public void deleteDeveloper(@PathVariable int id){
   if (developers.containsKey(id)) {
    developers.remove(id);
